@@ -14,3 +14,13 @@ install:
 
 script:
   - mvn test -f tests/pom.xml -D$PROFILE -B
+
+#deploy:
+#  provider: releases
+#  api_key:
+#    secure: JZzPstqKB4y7biMytFw6RZHxz57S+uolXonZrYCqE7UiVnVrBfRRGbFemvDq7a5lvBfM4KS3ODO05hjk82sXW3fGxrJAVWCVZ4kf31VWFG0aLEJnDso09bkCcNdvs7w1MkZWde0RM6Ux0mtN4Y9EE6goaRt1rEPVBKZ3hBNQBtDTGWf9FjNE4rhC14a9+Cvf/LTD+1cka/R/4A2P4eXcdAOQhZyu7CgsRrssY69PJxWVt3yznjtLBZZrNuaVkNO2QwJWBV3k1bVvWqApOYdKzz/Dh6q+EuuV85kXmdJJS4/KrS4eRXk3Aj4wadTGyh+bDhfJKIqqo59U86Nu+kuR4msPNbnUxbgMBobaw51SP8yFtHWY3FwQLVdepcFV8SuMXv9ebBUXLte0XLyq7GxFTFS5p7NMpS35t+NaM0Ijw4aYpKleBXAKlS8Cdxp1CjsW+3aMCxa4y0O1jCC1XoVAP4AyUaRfpckjHyu6tailklUl9ychcSS6WaZXbnJgHfirDoMXmcQH+8KPA5vPRKdkY0HVV9KLfC9bN5QbjsBSIalUPIwkbX8MYvKeJIltpWb7zmdE7NnMmCvnjXeRNw6IzjrICnIJuxbS1389mFwOOS1Jj/YFbPrG3XWF8wmtjlAube3nmwkEJOCPSFf6cG5Aw96KhMRrjeCZgWBLdZ9/kxw=
+#  skip_cleanup: true
+#  file: "${DEPLOYED_FILE}"
+#  on:
+#    repo: caozhilong/MOTHBALLED-graphviz
+#    condition: ${PROFILE} == "community"
