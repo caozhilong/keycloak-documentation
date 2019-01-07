@@ -21,6 +21,7 @@ This is what one might look like:
   "bearer-only" : false,
   "enable-basic-auth" : false,
   "expose-token" : true,
+  "verify-token-audience" : true,
    "credentials" : {
       "secret" : "234234-234234-234234"
    },
@@ -212,6 +213,11 @@ token-store::
   Alternative _cookie_ means storage of info in cookie.
   See <<_applicationclustering,Application Clustering>> for details
 
+token-cookie-path::
+  When using a cookie store, this option sets the path of the cookie used to store account info. If it's a relative path,
+  then it is assumed that the application is running in a context root, and is interpreted relative to that context root.
+  If it's an absolute path, then the absolute path is used to set the cookie path. Defaults to use paths relative to the context root.
+
 principal-attribute::
   OpenID Connect ID Token attribute to populate the UserPrincipal name with.
   If token attribute is null, defaults to `sub`.
@@ -249,3 +255,9 @@ ignore-oauth-query-parameter::
 redirect-rewrite-rules::
   If needed, specify the Redirect URI rewrite rule. This is an object notation where the key is the regular expression to which the Redirect URI is to be matched and the value is the replacement String.
   `$` character can be used for backreferences in the replacement String.
+
+verify-token-audience::
+  If set to `true`, then during authentication with the bearer token, the adapter will verify whether the token contains this
+  client name (resource) as an audience. The option is especially useful for services, which primarily serve requests authenticated
+  by the bearer token. This is set to `false` by default, however for improved security, it is recommended to enable this.
+  See link:{adminguide_link}#_audience[Audience Support] for more details about audience support.

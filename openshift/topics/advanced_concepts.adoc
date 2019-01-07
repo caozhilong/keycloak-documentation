@@ -1,3 +1,5 @@
+== Advanced Concepts
+
 These cover additional configuration topics, such as seting up keystores and a truststore for the RH-SSO server, creating an administrator account, an overview of available RH-SSO client registration methods, and guidance on configuring clustering.
 
 === Requirements and Deploying xref:../introduction/introduction.adoc#passthrough-templates[Passthrough TLS Termination] RH-SSO Templates
@@ -16,7 +18,7 @@ $ oc new-project sso-app-demo
 $ oc policy add-role-to-user view system:serviceaccount:$(oc project -q):default
 ----
 
-[[Configuring-Keystores]]
+[[advanced-concepts-Configuring-Keystores]]
 ==== Creating HTTPS and JGroups Keystores, and Truststore for the RH-SSO Server
 
 The RH-SSO application templates using xref:../introduction/introduction.adoc#passthrough-templates[passthrough TLS termination] require:
@@ -245,9 +247,63 @@ and access the RH-SSO administrator console at:
 * *\https://secure-sso-sso-app-demo.openshift.example.com/auth/admin*
 * *\http://sso-sso-app-demo.openshift.example.com/auth/admin*
 
-using the xref:../advanced_concepts/advanced_concepts.adoc#sso-administrator-setup[administrator account].
+using the xref:../advanced_concepts/advanced_concepts.adoc#advanced-concepts-sso-administrator-setup[administrator account].
 
-[[sso-administrator-setup]]
+[[advanced-concepts-sso-hostname-spi-setup]]
+=== Customizing Hostname for the {project_name} Server
+
+The hostname SPI introduced a flexible way to configure the hostname for the {project_name} server. There are two built-in providers. The first is `request`, which uses the request headers to determine the hostname. This is the *default setting* for {project_openshift_product_name} image. The second is `fixed`, which allows configuring a fixed hostname. The latter makes sure that only valid hostnames can be used and allows internal applications to invoke {project_name} server through an alternative URL.
+
+Run the following commands to set the `fixed` hostname SPI provider for the {project_name} server:
+
+. Deploy the {project_openshift_product_name} image with *_SSO_HOSTNAME_* environment variable set to the desired hostname of the {project_name} server.
++
+----
+$ oc new-app --template=sso-cd-x509-https \
+  -p SSO_HOSTNAME="rh-sso-server.openshift.example.com"
+----
+. Identify the name of the route for the {project_name} service.
++
+----
+$ oc get routes
+----
++
+[cols="7",options="header"]
+|===
+|NAME
+|HOST/PORT
+|PATH
+|SERVICES
+|PORT
+|TERMINATION
+|WILDCARD
+
+|sso
+|sso-sso-app-demo.openshift.example.com
+|
+|sso
+|<all>
+|reencrypt
+|None
+|===
+. Change the `host:` field to match the hostname specified as the value of the *_SSO_HOSTNAME_* environment variable above.
++
+[NOTE]
+====
+Adjust the `rh-sso-server.openshift.example.com` value in the following command as necessary.
+====
++
+----
+$ oc patch route/sso --type=json -p '[{"op": "replace", "path": "/spec/host", "value": "rh-sso-server.openshift.example.com"}]'
+----
++
+If successful, the previous command will return the following output:
++
+----
+route "sso" patched
+----
+
+[[advanced-concepts-sso-administrator-setup]]
 === Creating Administrator Account for Red Hat Single Sign-On Server
 
 Red Hat Single Sign-On does not provide any pre-configured management account out of the box. This administrator account is necessary for logging into the `master` realm's management console and perform server maintenance operations such as, creating realms or users, or registering applications intended to be secured by Red Hat Single Sign-On.
@@ -262,7 +318,7 @@ The administrator account can be created:
 Red Hat Single Sign-On allows an initial administrator account to be created via the link:https://access.redhat.com/documentation/en-us/red_hat_single_sign-on/7.2/html-single/getting_started_guide/#creating_the_admin_account[Welcome Page] web form, but only if the Welcome Page is accessed from localhost; this method of administrator account creation is not applicable for the {project_openshift_product_name} image.
 ====
 
-[[sso-admin-template-parameters]]
+[[advanced-concepts-sso-admin-template-parameters]]
 ==== Creating RH-SSO Administrator Account via Template Parameters
 
 When deploying RH-SSO application template, *_SSO_ADMIN_USERNAME_* and *_SSO_ADMIN_PASSWORD_* parameters denote the username and password of the RH-SSO server's administrator account to be created for the `master` realm.
@@ -306,7 +362,7 @@ $ oc env dc/sso -e SSO_ADMIN_USERNAME="" SSO_ADMIN_PASSWORD=""
 ----
 ====
 
-[[sso-admin-remote-shell]]
+[[advanced-concepts-sso-admin-remote-shell]]
 ==== Creating RH-SSO Administrator Account via Remote Shell Session to RH-SSO Pod
 
 Run following commands to create an administrator account for the `master` realm of the RH-SSO server, when deploying the {project_openshift_product_name} image directly from the image stream (without the xref:../introduction/introduction.adoc#sso-templates[template]), after the RH-SSO application pod has been started:
@@ -362,9 +418,9 @@ After the RH-SSO web server pod has started, it can be accessed from its custom 
 * *\http://sso-_<project-name>_._<hostname>_/auth/admin*: for the RH-SSO web server, and
 * *\https://secure-sso-_<project-name>_._<hostname>_/auth/admin*: for the encrypted RH-SSO web server.
 
-Use the xref:../advanced_concepts/advanced_concepts.adoc#sso-administrator-setup[administrator user credentials] to log in into the `master` realm’s administration console.
+Use the xref:../advanced_concepts/advanced_concepts.adoc#advanced-concepts-sso-administrator-setup[administrator user credentials] to log in into the `master` realm’s administration console.
 
-[[SSO-Clients]]
+[[advanced-concepts-SSO-Clients]]
 === RH-SSO Clients
 
 Clients are RH-SSO entities that request user authentication. A client can be an application requesting RH-SSO to provide user authentication, or it can make requests for access tokens to start services on behalf of an authenticated user. See the link:https://access.redhat.com/documentation/en-us/red_hat_single_sign-on/7.2/html/server_administration_guide/clients[Managing Clients chapter of the Red Hat Single Sign-On documentation] for more information.
@@ -391,7 +447,7 @@ The following is an example snippet for the application *web.xml* to configure a
 ...
 ----
 
-[[Auto-Man-Client-Reg]]
+[[advanced-concepts-Auto-Man-Client-Reg]]
 ==== Automatic and Manual RH-SSO Client Registration Methods
 A client application can be automatically registered to an RH-SSO realm by using credentials passed in variables specific to the *_eap64-sso-s2i_*,  *_eap70-sso-s2i_*, *_eap71-sso-s2i_*, and *_datavirt63-secure-s2i_* templates.
 

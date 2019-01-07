@@ -2,6 +2,7 @@ http://localhost*
 http://localhost:8080*
 http://localhost:8180*
 http://localhost:8181*
+http://127.0.0.1:3000*
 https://myhost.com/myapp/k_jwks
 https://myhost.com/myapp
 http://host:port*
@@ -15,6 +16,12 @@ http://node12:8080*
 http://node21:8080*
 http://node22:8080*
 http://web.example.com*
+https://keycloak.example.com*
 https://github.com/keycloak/keycloak-documentation/blob/master/*
 https://openshift.example.com:8443/console
 https://github.com/keycloak/keycloak-quickstarts.git
+https://github.com/go-chi/chi#router-design
+https://accounts.google.com/o/oauth2/revoke
+https://keycloak.example.com/auth/realms/REALM_NAME/protocol/openid-connect/logout
+http://127.0.0.1:3000/oauth/callback
+https://access.redhat.com/documentation/en-us/red_hat_jboss_enterprise_application_platform/*
